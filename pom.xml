@@ -1,0 +1,171 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.app1.app</groupId>
+  <artifactId>App1</artifactId>
+  <packaging>war</packaging>
+  <version>1.0-SNAPSHOT</version>
+  <name>my-webapp Maven Webapp</name>
+  <url>http://maven.apache.org</url>
+  <!--
+  <build>
+    <finalName>App1</finalName>
+  </build>
+  -->
+  <properties>
+    <warFile>none</warFile>
+  </properties>
+  <profiles>
+     <profile>
+        <id>app1</id>
+        <build>
+           <plugins>
+
+              <plugin>
+                 <groupId>org.apache.maven.plugins</groupId>
+		 <artifactId>maven-deploy-plugin</artifactId>
+		 <version>2.7</version>
+                 <configuration>
+  		     <skip>true</skip>
+    	         </configuration>
+              </plugin> 
+
+              <plugin>
+                 <groupId>org.codehaus.mojo</groupId>
+                 <artifactId>build-helper-maven-plugin</artifactId>
+                 <version>1.8</version>
+                 <executions>
+                    <execution>
+                    <id>regex-property</id>
+                    <goals>
+                       <goal>regex-property</goal>
+                    </goals>
+                    <configuration>
+                       <name>warFilename</name>
+                       <value>${warFile}</value>
+                       <regex>.war$</regex>
+                       <replacement></replacement>
+                       <failIfNoMatch>false</failIfNoMatch>
+                    </configuration>
+                    </execution>
+                 </executions>
+              </plugin>
+
+              <plugin>
+                 <groupId>org.codehaus.mojo</groupId>
+                 <artifactId>exec-maven-plugin</artifactId>
+                 <version>1.6.0</version>
+                 <executions>
+                    <execution>
+                    <id> unzip, put setting file and zip again </id>
+                    <!-- <phase>generate-sources</phase> -->
+                    <phase>deploy</phase>
+                    <goals>
+                       <goal>exec</goal>
+                    </goals>
+                    </execution>
+                  </executions>
+                  <configuration>
+                     <commandlineArgs>${warFile}</commandlineArgs>
+                     <executable>${basedir}/make_war.sh</executable>
+                  </configuration>
+              </plugin>
+
+		<!--
+              <plugin>
+                 <groupId>org.apache.tomcat.maven</groupId>
+                 <artifactId>tomcat7-maven-plugin</artifactId>
+                 <version>2.1</version>
+                 <executions>
+                    <execution>
+                    <id>undeploy-app-1</id>
+                       <goals>
+                          <goal>undeploy</goal>
+                       </goals>
+                       <phase>deploy</phase>
+                       <configuration>
+                          <username>salt</username>
+                          <password>salt</password>
+                             <url>http://localhost:9090/manager/text</url>
+                             <server>Tomcat</server>
+                             <path>/app1</path>
+                       </configuration>
+                    </execution>
+                 </executions>
+              </plugin>
+		-->
+              <plugin>
+                 <groupId>org.apache.tomcat.maven</groupId>
+                 <artifactId>tomcat7-maven-plugin</artifactId>
+                 <version>2.2</version>
+                 <executions>
+                    <execution>
+                    <id>deploy-app-1</id>
+                       <goals>
+                          <goal>deploy-only</goal>
+                       </goals>
+                       <phase>deploy</phase>
+                       <configuration>
+                          <username>admin</username>
+                          <password>adminpass</password>
+                             <warFile>${basedir}/deploy/${warFile}</warFile>
+                             <url>http://localhost:9090/manager/text</url>
+                             <server>Tomcat</server>
+                             <path>/app1</path>
+                             <update>true</update>
+                             <ignorePackaging>true</ignorePackaging>
+                       </configuration>
+                    </execution>
+                 </executions>
+              </plugin>
+
+            </plugins>
+         </build>
+      </profile>
+
+      <profile>
+        <id>app2</id>
+        <build>
+           <plugins>
+
+              <plugin>
+                 <groupId>org.apache.maven.plugins</groupId>
+                 <artifactId>maven-deploy-plugin</artifactId>
+                 <version>2.7</version>
+                 <configuration>
+                     <skip>true</skip>
+                 </configuration>
+              </plugin>
+              
+	      <plugin>
+                 <groupId>org.apache.tomcat.maven</groupId>
+                 <artifactId>tomcat7-maven-plugin</artifactId>
+                 <version>2.2</version>
+                 <executions>
+                    <execution>
+                    <id>deploy-app-2</id>
+                       <goals>
+                          <goal>deploy-only</goal>
+                       </goals>
+                       <phase>deploy</phase>
+                       <configuration>
+                          <username>admin</username>
+                          <password>adminpass</password>
+                             <warFile>${basedir}/deploy/${warFile}</warFile>
+                             <url>http://localhost:8080/manager/text</url>
+                             <server>Tomcat</server>
+                             <path>/app1</path>
+                             <update>true</update>
+                             <ignorePackaging>true</ignorePackaging>
+                       </configuration>
+                    </execution>
+                 </executions>
+              </plugin>
+
+            </plugins>
+         </build>
+      </profile>
+ 
+  </profiles> 
+ 
+</project>
